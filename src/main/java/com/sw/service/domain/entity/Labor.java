@@ -17,4 +17,10 @@ public class Labor {
     private Double length;
     private Double width;
     private Double ppu;
+    private Double cost;
+
+    public Double calculate () {
+        cost = (this.length * this.width) * this.ppu;
+        return cost;
+    }
 }

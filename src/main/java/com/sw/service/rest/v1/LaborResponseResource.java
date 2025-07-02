@@ -1,5 +1,6 @@
 package com.sw.service.rest.v1;
 
+import com.sw.service.domain.entity.Labor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +13,6 @@ import lombok.NoArgsConstructor;
 public class LaborResponseResource {
 
     private Double totalCost;
+    private Long id;
 
-    public LaborResponseResource(double totalCost){
-        this.totalCost = totalCost;
-    }
 }

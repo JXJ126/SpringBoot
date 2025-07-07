@@ -15,5 +15,7 @@ public interface LaborService {
 
     boolean deleteLabor (Long id);
 
+    Double calculateCost (Labor labor);
+
     Labor saveCost(Labor labor);
 }

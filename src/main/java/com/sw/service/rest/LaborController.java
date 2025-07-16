@@ -17,9 +17,10 @@ public class LaborController{
     private final LaborService laborService;
     private final LaborMapper laborMapper;
 
+
     @PostMapping("/labor/price")
     public LaborResponseResource calculateCost(@Valid @RequestBody LaborRequestResource request) {
-        System.out.println(request);
+//        System.out.println(request);
 
         Labor labor = laborMapper.convertLaborRequesttoLabor(request);
 

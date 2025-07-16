@@ -16,17 +16,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,12 +42,6 @@ public class LaborControllerTest {
     @MockitoBean
     LaborMapper mockLaborMapper;
 
-    @Mock
-    LaborResponseResource mockResponse;
-
-    @Mock
-    LaborRequestResource mockRequest;
-
     @BeforeEach
     public void setup() throws IOException {
         JavaTimeModule module = new JavaTimeModule();
@@ -62,7 +51,7 @@ public class LaborControllerTest {
 
     @Test
     void labor_Request_Endpoint_Return_200_When_Request_Is_Valid() throws Exception {
-        LaborRequestResource request = new LaborRequestResource(10.0,10.0,2.0,200.0);
+        LaborRequestResource request = new LaborRequestResource(10.0,10.0,2.0);
         this.mockMvc.perform(post("/labor/price")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request)))
@@ -71,23 +60,32 @@ public class LaborControllerTest {
 
     @Test
     void GIVEN_a_labor_request_WITH_valid_data_a_labor_response_is_returned() throws Exception {
-        LaborRequestResource request = new LaborRequestResource(10.0,2.0,10.0,200.0);
+        LaborRequestResource request = new LaborRequestResource(10.0,2.0,10.0);
         Labor labor = new Labor(1,10.0,10.0,2.0,200.0);
         LaborResponseResource response = new LaborResponseResource(200.0,1);
 
         given(mockLaborMapper.convertLaborRequesttoLabor(any())).willReturn(labor);
+        given(mockLaborMapper.convertLabortoLaborResponse(any())).willReturn(response);
         given(mockLaborRepository.save(any())).willReturn(labor);
         given(mockLaborService.saveCost(any())).willReturn(labor);
 
-        System.out.println(objectMapper.writeValueAsString(response));
-
-        MvcResult result = this.mockMvc.perform(post("/labor/price")
+        this.mockMvc.perform(post("/labor/price")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-//                .andExpect(content().json(objectMapper.writeValueAsString(response)))
-                .andReturn();
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
+    }
 
-        System.out.println("result:" + result.getResponse().getContentAsString());
+    @Test
+    void GIVEN_a_labor_request_WITH_invalid_data_an_error_is_returned() throws Exception {
+        LaborRequestResource request = new LaborRequestResource(0.0,0.0,0.0);
+        Labor labor = new Labor(1,00.0,00.0,0.0,000.0);
+
+        given(mockLaborMapper.convertLaborRequesttoLabor(any())).willReturn(labor);
+
+        this.mockMvc.perform(post("/labor/price")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().is4xxClientError());
     }
 }

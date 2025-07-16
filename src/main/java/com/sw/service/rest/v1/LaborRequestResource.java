@@ -19,5 +19,4 @@ public class LaborRequestResource {
     private Double width;
     @Positive
     private Double ppu;
-    private Double cost;
 }

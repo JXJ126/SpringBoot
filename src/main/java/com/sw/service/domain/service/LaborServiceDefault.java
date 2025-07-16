@@ -14,7 +14,6 @@ import java.util.List;
 public class LaborServiceDefault implements LaborService {
 
     private final LaborRepository laborRepository;
-    private final LaborMapper laborMapper;
 
     public Labor createLabor (Labor labor) {
         return laborRepository.save(labor);
@@ -45,13 +44,19 @@ public class LaborServiceDefault implements LaborService {
         return false;
     }
 
+    public Double calculateCost (Labor labor) {
+        Double cost = labor.getWidth() * labor.getLength() * labor.getPpu();
+        labor.setCost(cost);
+        return cost;
+    }
+
     public Labor saveCost(Labor labor) {
 //        double totalCost = (labor.getLength() * labor.getWidth()) * labor.getPpu();
         // Refactor, change it to where the mapping is done in the controller instead of the service
         // Save the cost in the database to make ^ easier. **
         // Watch the rest of the videos
         // Create Service Interface **
-        double totalCost = labor.calculate();
+        double totalCost = calculateCost(labor);
         labor = laborRepository.save(labor);
 //        laborResponseResource.setTotalCost(totalCost);
 //        LaborResponseResource laborResponseResource = new LaborResponseResource();

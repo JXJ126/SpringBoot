@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class LaborResponseResource {
 
     private Double totalCost;
-    private Long id;
+    private Integer id;
 
 }
